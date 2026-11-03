@@ -1,0 +1,152 @@
+﻿@page "/processos/cadastro"
+@page "/processos/editar/{id:int}"
+@rendermode InteractiveServer
+
+@using AppWebMayara.Model
+@using AppWebMayara.DAO
+
+@inject ProcessoDAO dao
+@inject NavigationManager NavigationManager
+
+<PageTitle>@(id.HasValue ? "Editar Processo" : "Novo Processo") - Sistema de Controle de Processos</PageTitle>
+
+<h1>Processos - Sistema de Controle de Processos</h1>
+
+<h2>@(id.HasValue ? "Editar Processo" : "Cadastro de Processo")</h2>
+
+@if (!string.IsNullOrEmpty(erro))
+{
+    <div class="alert alert-danger">
+        @erro
+    </div>
+}
+else
+{
+    <EditForm Model="processo" OnValidSubmit="Salvar">
+        <DataAnnotationsValidator />
+
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label for="numero" class="form-label">Número</label>
+
+            <InputText id="numero"
+                       class="form-control"
+                       @bind-Value="processo.Numero" />
+
+            <ValidationMessage For="@(() => processo.Numero)" />
+        </div>
+
+        <div class="mb-3">
+            <label for="data" class="form-label">Data</label>
+
+            <InputDate id="data"
+                       class="form-control"
+                       @bind-Value="processo.Data" />
+
+            <ValidationMessage For="@(() => processo.Data)" />
+        </div>
+
+        <div class="mb-3">
+            <label for="situacao" class="form-label">Situação</label>
+
+            <InputSelect id="situacao"
+                         class="form-select"
+                         @bind-Value="processo.Situacao">
+
+                <option value="Aberto">Aberto</option>
+                <option value="Em análise">Em análise</option>
+                <option value="Pendente">Pendente</option>
+                <option value="Concluído">Concluído</option>
+                <option value="Arquivado">Arquivado</option>
+
+            </InputSelect>
+
+            <ValidationMessage For="@(() => processo.Situacao)" />
+        </div>
+
+        <div class="mb-3">
+            <label for="interessado" class="form-label">Interessado</label>
+
+            <InputText id="interessado"
+                       class="form-control"
+                       @bind-Value="processo.Interessado" />
+
+            <ValidationMessage For="@(() => processo.Interessado)" />
+        </div>
+
+        <div class="mb-3">
+            <label for="assunto" class="form-label">Assunto</label>
+
+            <InputText id="assunto"
+                       class="form-control"
+                       @bind-Value="processo.Assunto" />
+
+            <ValidationMessage For="@(() => processo.Assunto)" />
+        </div>
+
+        <div class="mb-3">
+            <label for="descricao" class="form-label">Descrição</label>
+
+            <InputTextArea id="descricao"
+                           class="form-control"
+                           @bind-Value="processo.Descricao" />
+
+            <ValidationMessage For="@(() => processo.Descricao)" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            @(id.HasValue ? "Atualizar" : "Salvar")
+        </button>
+
+        <a href="/processos" class="btn btn-secondary ms-2">
+            Cancelar
+        </a>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int? id { get; set; }
+
+    private Processo processo = new();
+
+    private string erro = string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        erro = string.Empty;
+
+        if (id.HasValue)
+        {
+            var processoEncontrado = dao.ObterPorId(id.Value);
+
+            if (processoEncontrado == null)
+            {
+                erro = "Processo não encontrado.";
+                return;
+            }
+
+            processo = processoEncontrado;
+        }
+        else
+        {
+            processo = new Processo();
+        }
+    }
+
+    private void Salvar()
+    {
+        if (id.HasValue)
+        {
+            processo.Id = id.Value;
+            dao.Atualizar(processo);
+        }
+        else
+        {
+            dao.Inserir(processo);
+        }
+
+        NavigationManager.NavigateTo("/processos");
+    }
+}
