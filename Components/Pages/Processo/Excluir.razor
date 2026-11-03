@@ -1,0 +1,108 @@
+﻿@page "/processos/excluir/{Id:int}"
+
+@rendermode InteractiveServer
+
+@using AppWebMayara.Model
+@using AppWebMayara.DAO
+
+@inject ProcessoDAO dao
+@inject NavigationManager NavigationManager
+
+<PageTitle>Excluir Processo - Sistema de Controle de Processos</PageTitle>
+
+<h1>Excluir Processo</h1>
+
+@if (!processoEncontrado)
+{
+    <div class="alert alert-warning" role="alert">
+        Processo não encontrado.
+
+        <a href="/processos" class="alert-link">
+            Voltar para a lista
+        </a>
+    </div>
+}
+else
+{
+    <div class="alert alert-danger" role="alert">
+        <strong>Atenção!</strong>
+
+        Tem certeza de que deseja excluir este processo?
+        Esta ação não pode ser desfeita.
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            Dados do Processo
+        </div>
+
+        <div class="card-body">
+
+            <p>
+                <strong>Número:</strong>
+                @processo.Numero
+            </p>
+
+            <p>
+                <strong>Interessado:</strong>
+                @processo.Interessado
+            </p>
+
+            <p>
+                <strong>Assunto:</strong>
+                @processo.Assunto
+            </p>
+
+            <p>
+                <strong>Situação:</strong>
+                @processo.Situacao
+            </p>
+
+        </div>
+    </div>
+
+    <div class="mt-3">
+
+        <button type="button"
+                class="btn btn-danger"
+                @onclick="ConfirmarExclusao">
+
+            <i class="bi bi-trash"></i>
+            Excluir Processo
+
+        </button>
+
+        <a href="/processos" class="btn btn-secondary ms-2">
+            Cancelar
+        </a>
+
+    </div>
+}
+
+@code {
+    private Processo processo = new();
+
+    private bool processoEncontrado = true;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        var processoCarregado = dao.ObterPorId(Id);
+
+        processoEncontrado = processoCarregado is not null;
+
+        if (processoCarregado is not null)
+        {
+            processo = processoCarregado;
+        }
+    }
+
+    private void ConfirmarExclusao()
+    {
+        dao.Excluir(Id);
+
+        NavigationManager.NavigateTo("/processos");
+    }
+}

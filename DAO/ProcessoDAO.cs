@@ -231,5 +231,14 @@ namespace AppWebMayara.DAO
 
             comando.ExecuteNonQuery();
         }
+        public void Excluir(int id)
+        {
+            using var con = _conexao.GetConnection();
+            const string sql = "DELETE FROM processos WHERE id_pro = @id";
+            using var comando = con.CreateCommand();
+            comando.CommandText = sql;
+            comando.Parameters.AddWithValue("@id", id);
+            comando.ExecuteNonQuery();
+        }
     }
 }

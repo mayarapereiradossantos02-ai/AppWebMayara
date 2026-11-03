@@ -1,4 +1,5 @@
 ﻿@page "/processos"
+
 @rendermode InteractiveServer
 
 @using AppWebMayara.Model
@@ -11,14 +12,17 @@
 <h1>Processos - Sistema de Controle de Processos</h1>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
+
     <h2>Consulta de Processos</h2>
 
     <a href="/processos/cadastro" class="btn btn-primary">
         + Novo Processo
     </a>
+
 </div>
 
 <table class="table table-striped table-hover">
+
     <thead>
         <tr>
             <th>ID</th>
@@ -26,14 +30,16 @@
             <th>Interessado</th>
             <th>Assunto</th>
             <th>Situação</th>
-            <th class="text-end">Ações</th>
+            <th>Ações</th>
         </tr>
     </thead>
 
     <tbody>
+
         @foreach (var processo in processos)
         {
             <tr>
+
                 <td>@processo.Id</td>
                 <td>@processo.Numero</td>
                 <td>@processo.Interessado</td>
@@ -41,23 +47,34 @@
                 <td>@processo.Situacao</td>
 
                 <td class="text-end">
+
                     <div class="btn-group btn-group-sm">
+
                         <a href="@($"/processos/editar/{processo.Id}")"
                                class="btn btn-light border text-primary"
                                title="Editar">
+
                             <i class="bi bi-pencil"></i>
+
                         </a>
 
-                        <a href="#"
+                        <a href="@($"/processos/excluir/{processo.Id}")"
                                class="btn btn-light border text-danger"
                                title="Excluir">
+
                             <i class="bi bi-trash"></i>
+
                         </a>
+
                     </div>
+
                 </td>
+
             </tr>
         }
+
     </tbody>
+
 </table>
 
 @if (processos.Count == 0)
